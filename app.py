@@ -66,7 +66,8 @@ BOT_TOKEN = "7926174608:AAH9pLyUHwLwCGsYj9xdXwEJYMwUxHTPfK0"
 CPU_THRESHOLD = float(os.environ.get("CPU_THRESHOLD", "90.0"))
 MEMORY_THRESHOLD = float(os.environ.get("MEMORY_THRESHOLD", "90.0"))
 MAX_RUNNING_PROCESSES = int(os.environ.get("MAX_RUNNING_PROCESSES", "10"))
-MAX_FILES_PER_USER = int(os.environ.get("MAX_FILES_PER_USER", "3"))
+MAX_FILES_PER_USER = 10  # এখানে আপনার পছন্দমতো সংখ্যা দিন
+
 
 # Application directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -973,7 +974,7 @@ def dashboard():
             .btn {{ display: block; margin-top: 25px; padding: 12px; background: #0088cc; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }}
             .status {{ color: #00ff00; animation: blink 1.5s infinite; }}
             @keyframes blink {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
-        </style>
+            </style>
     </head>
     <body>
         <div class="card">
@@ -995,6 +996,7 @@ def dashboard():
     </body>
     </html>
     """
+
     return render_template_string(html_content)
 
 def run_web():

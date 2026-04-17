@@ -15,6 +15,8 @@ import importlib.util
 import html as html_lib
 import logging
 from datetime import datetime
+from flask import Flask, render_template_string
+import threading
 
 # Auto install required packages
 def install_requirements():
@@ -56,7 +58,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = "7926174608:AAH9pLyUHwLwCGsYj9xdXwEJYMwUxHTPfK0"
+BOT_TOKEN = "8097355535:AAH-b0rrf3F-Hy20_JSjsiU4YWTFW6cyxFk"
 
 # Load thresholds
 CPU_THRESHOLD = float(os.environ.get("CPU_THRESHOLD", "90.0"))
@@ -441,7 +443,7 @@ def start_handler(message):
     file_count = len(files)
     
     welcome_text = f"""
-🔥 <b>24x7 Danger Hosting Bot</b>
+🔥 <b>24x7 JUBAYER Hosting Bot</b>
 
 👋 Welcome <b>{html_lib.escape(user.first_name or 'User')}</b>
 🆔 Your ID: <code>{user_id}</code>
@@ -460,11 +462,11 @@ def start_handler(message):
 
 @bot.message_handler(func=lambda m: m.text == "📢 Updates Channel")
 def updates_handler(message):
-    bot.send_message(message.chat.id, "📢 Join our channel: t.me/freefirelikesdanger")
+    bot.send_message(message.chat.id, "📢 Join our channel: t.me/freefirelikesJUBAYER")
 
 @bot.message_handler(func=lambda m: m.text == "📞 Contact Owner")
 def contact_handler(message):
-    bot.send_message(message.chat.id, "📞 Contact: @danger_ff_like")
+    bot.send_message(message.chat.id, "📞 Contact: @JUBAYER_ff_like")
 
 @bot.message_handler(func=lambda m: m.text == "⚡ Bot Speed")
 def speed_handler(message):
@@ -945,8 +947,74 @@ def start_bot():
         except Exception as e:
             logger.error(f"Bot polling error: {e}")
             time.sleep(5)
+# Flask Web Dashboard Setup
+app = Flask(__name__)
+
+@app.route('/')
+def dashboard():
+    # ডাটাবেস থেকে পরিসংখ্যান আনা
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM files")
+        total_files = cur.fetchone()[0] or 0
+        cur.execute("SELECT COUNT(*) FROM files WHERE status='Running'")
+        running_files = cur.fetchone()[0] or 0
+        cpu, mem, _ = get_system_load()
+    except:
+        total_files, running_files, cpu, mem = 0, 0, 0, 0
+
+    # HTML Template (ইন্টারফেস ডিজাইন)
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JUBAYER Hosting Dashboard</title>
+        <style>
+            body {{ font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; text-align: center; padding: 40px; }}
+            .card {{ background: #111; border: 1px solid #ff4d4d; padding: 25px; border-radius: 15px; display: inline-block; width: 320px; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); }}
+            h1 {{ color: #ff4d4d; text-transform: uppercase; letter-spacing: 2px; }}
+            .stat {{ margin: 15px 0; font-size: 1.1em; text-align: left; }}
+            .bar-bg {{ background: #333; height: 10px; border-radius: 5px; margin-top: 5px; overflow: hidden; }}
+            .bar-fill {{ background: #ff4d4d; height: 100%; transition: 0.5s; }}
+            .btn {{ display: block; margin-top: 25px; padding: 12px; background: #0088cc; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }}
+            .status {{ color: #00ff00; animation: blink 1.5s infinite; }}
+            @keyframes blink {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>🔥 JUBAYER Host</h1>
+            <p>Status: <span class="status">● ONLINE</span></p>
+            <hr style="border: 0.1px solid #222;">
+            <div class="stat">📁 Total Files: <b>{total_files}</b></div>
+            <div class="stat">🚀 Running Now: <b>{running_files}</b></div>
+            <div class="stat">
+                CPU Usage: {cpu}%
+                <div class="bar-bg"><div class="bar-fill" style="width: {cpu}%"></div></div>
+            </div>
+            <div class="stat">
+                RAM Usage: {mem}%
+                <div class="bar-bg"><div class="bar-fill" style="width: {mem}%"></div></div>
+            </div>
+            <a href="https://t.me/freefirelikesJUBAYER" class="btn">Telegram Support</a>
+        </div>
+    </body>
+    </html>
+    """
+    return render_template_string(html_content)
+
+def run_web():
+    # পোর্ট ৫০০০ এ ওয়েব সার্ভার চলবে
+    app.run(host='0.0.0.0', port=5000)
 
 # Main execution
 if __name__ == "__main__":
-    logger.info("Starting 24x7 Danger Hosting Bot...")
+    logger.info("Starting 24x7 JUBAYER Hosting Bot...")
+    
+    # এটি ওয়েব ড্যাশবোর্ডকে আলাদা ভাবে চালু করবে
+    threading.Thread(target=run_web, daemon=True).start()
+    
+    # এটি বটকে চালু করবে
     start_bot()
